@@ -13,6 +13,7 @@ public final class GameConstants {
   public static final String PLAY_AS_GUEST = "playasguest";
   public static final String CONFIRM_USER = "confirmuserselection";
   public static final String ENTER_USER = "enteruser";
+  public static final String DELETE_USER = "deleteuser";
 
   private GameConstants() {}
 }

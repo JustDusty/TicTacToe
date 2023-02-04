@@ -1,6 +1,7 @@
 package tictactoe.application;
 
 import java.awt.EventQueue;
+import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -8,11 +9,11 @@ import javax.swing.WindowConstants;
 import tictactoe.controllers.DialogController;
 import tictactoe.controllers.GameController;
 import tictactoe.controllers.OptionsController;
-import tictactoe.model.GameBoard;
-import tictactoe.model.LoginHandler;
-import tictactoe.model.User;
+import tictactoe.model.game.GameBoard;
+import tictactoe.model.login.Database;
+import tictactoe.model.login.DatabaseHandler;
+import tictactoe.model.login.User;
 import tictactoe.view.gameview.GamePanel;
-import tictactoe.view.login.LeaderPanel;
 import tictactoe.view.login.LoginFrame;
 
 @SuppressWarnings("unused")
@@ -27,7 +28,7 @@ public class Application {
 
   private static JFrame gameFrame;
   private static LoginFrame loginFrame;
-
+  private static Database db = Database.getInstance();
 
   static JFrame createGameFrame(GamePanel gamePanel) {
     JFrame f = new JFrame();
@@ -41,8 +42,7 @@ public class Application {
     return f;
   }
 
-  static void initializeApp() {
-    user = new User("Guest");
+  static void initApp() {
     optionsController.setGameController(gameController);
     gameController.setUser(user);
     optionsController.setUser(user);
@@ -52,18 +52,34 @@ public class Application {
 
   }
 
-  static void initLoginHandler(LoginFrame loginFrame) {
-    LeaderPanel leaderPanel = loginFrame.getLeaderPanel();
-    LoginHandler handler = new LoginHandler(leaderPanel.getUserTableModel());
-    handler.read();
+  static void initDatabase() {
+    try {
+      db.connect();
+      var connection = db.getConnection();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(handler::write));
+      var sql = "create table if not exists users "
+          + "(id integer primary key not null auto_increment," + "userid integer not null default "
+          + user.getID() + ",username text not null," + "wins integer not null,"
+          + "losses integer not null," + "score decimal(8,2) not null," + "unique key(userid));";
+      var statement = connection.createStatement();
+      statement.execute(sql);
 
+      statement.close();
+
+      DatabaseHandler dbHandler =
+          new DatabaseHandler(loginFrame.getLeaderPanel().getUserTableModel());
+      dbHandler.readFromDatabase();
+
+      Runtime.getRuntime().addShutdownHook(new Thread(dbHandler::saveToDatabase));
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
 
   static void runApp() {
-    user = new User("Guest");
+    user = new User(Util.generateUniqueId(), "Guest");
+
     gameBoard = new GameBoard();
     gamePanel = new GamePanel();
 
@@ -75,8 +91,8 @@ public class Application {
     optionsController = new OptionsController(gamePanel, gameBoard);
     dialogController = new DialogController(loginFrame, gamePanel);
 
-    initializeApp();
-    initLoginHandler(loginFrame);
+    initApp();
+    initDatabase();
 
   }
 

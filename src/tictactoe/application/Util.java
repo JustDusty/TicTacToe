@@ -7,6 +7,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.UUID;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,12 +16,9 @@ import javax.swing.JTextField;
 public final class Util {
 
   public static final Dimension smallPanelSize = new Dimension(300, 170);
-
-
   public static final Dimension largePanelSize = new Dimension(410, 530);
 
   private Util() {}
-
 
 
   private static void setFLFontStyle(Component comp) {
@@ -35,6 +33,15 @@ public final class Util {
     } catch (ClassCastException e) {
       e.printStackTrace();
     }
+  }
+
+  public static int generateUniqueId() {
+    UUID idOne = UUID.randomUUID();
+    String str = "" + idOne;
+    int uid = str.hashCode();
+    String filterStr = "" + uid;
+    str = filterStr.replace("-", "");
+    return Integer.parseInt(str);
   }
 
   public static void setFontStyle(JPanel panel) {

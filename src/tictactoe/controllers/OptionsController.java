@@ -7,8 +7,8 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import tictactoe.application.GameConstants;
-import tictactoe.model.GameBoard;
-import tictactoe.model.User;
+import tictactoe.model.game.GameBoard;
+import tictactoe.model.login.User;
 import tictactoe.view.gameview.GamePanel;
 
 public class OptionsController extends Controller

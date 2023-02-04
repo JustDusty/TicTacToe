@@ -1,4 +1,4 @@
-package tictactoe.model;
+package tictactoe.model.game;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;

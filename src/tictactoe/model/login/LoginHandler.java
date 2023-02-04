@@ -1,4 +1,4 @@
-package tictactoe.model;
+package tictactoe.model.login;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

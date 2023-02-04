@@ -1,6 +1,6 @@
 package tictactoe.controllers;
 
-import tictactoe.model.User;
+import tictactoe.model.login.User;
 
 public interface LoginListener {
 

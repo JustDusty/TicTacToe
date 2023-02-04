@@ -10,7 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import tictactoe.controllers.LoginListener;
-import tictactoe.model.UserTableModel;
+import tictactoe.model.login.UserTableModel;
 
 public class LoginFrame extends JDialog {
   class DynamicCardLayout extends CardLayout {

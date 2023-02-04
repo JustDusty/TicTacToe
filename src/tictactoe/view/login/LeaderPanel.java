@@ -1,6 +1,5 @@
 package tictactoe.view.login;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
@@ -10,25 +9,22 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.TableRowSorter;
 import tictactoe.application.GameConstants;
 import tictactoe.application.Util;
 import tictactoe.controllers.LoginListener;
-import tictactoe.model.User;
-import tictactoe.model.UserTableModel;
+import tictactoe.model.login.DatabaseHandler;
+import tictactoe.model.login.User;
+import tictactoe.model.login.UserTableModel;
 
 public class LeaderPanel extends JPanel {
   private static final long serialVersionUID = 1L;
@@ -37,11 +33,12 @@ public class LeaderPanel extends JPanel {
 
   private UserTableModel model;
   private JTable userTable;
-  private transient TableRowSorter<UserTableModel> sorter;
+
 
   private JTextField txtUser;
   private JButton btnPrevious;
   private JButton btnConfirm;
+  private JButton btnDelete;
   private JButton btnQuit;
 
 
@@ -51,7 +48,7 @@ public class LeaderPanel extends JPanel {
 
 
   public LeaderPanel(UserTableModel model) {
-
+    this.model = model;
     JPanel mainPanel = new JPanel();
 
     mainPanel.setLayout(new GridBagLayout());
@@ -75,7 +72,11 @@ public class LeaderPanel extends JPanel {
     c.anchor = GridBagConstraints.WEST;
     mainPanel.add(txtUser, c);
 
-    JPanel userTablePanel = createUserTablePanel(model);
+    JPanel userTablePanel = new JPanel();
+    userTable = model.createUserTable();
+    JScrollPane scrollPane = new JScrollPane(userTable);
+    scrollPane.putClientProperty("JScrollBar.showButtons", true);
+    userTablePanel.add(scrollPane);
     c.insets = new Insets(0, 0, 0, 0);
     c.gridx = 0;
     c.gridy = 2;
@@ -91,10 +92,10 @@ public class LeaderPanel extends JPanel {
     c.gridwidth = 1;
     mainPanel.add(btnConfirm, c);
 
-    Component strut = Box.createHorizontalStrut(150);
+    btnDelete = new JButton("Delete");
     c.gridx = 1;
     c.gridy = 3;
-    mainPanel.add(strut, c);
+    mainPanel.add(btnDelete, c);
 
     btnPrevious = new JButton("Go Back");
     c.gridx = 2;
@@ -119,31 +120,6 @@ public class LeaderPanel extends JPanel {
     listeners.add(listener);
   }
 
-  public JPanel createUserTablePanel(UserTableModel model) {
-    JPanel userTablePanel = new JPanel();
-    this.model = model;
-    userTable = new JTable(model);
-    userTable.setShowGrid(false);
-    userTable.setShowHorizontalLines(false);
-    userTable.setShowVerticalLines(false);
-    userTable.setRowMargin(0);
-    userTable.setIntercellSpacing(new Dimension(0, 0));
-    userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    userTable.setPreferredScrollableViewportSize(new Dimension(370, 400));
-    userTable.setFillsViewportHeight(true);
-
-
-
-    sorter = new TableRowSorter<>(model);
-    sorter.setComparator(0, Comparator.naturalOrder());
-    userTable.setRowSorter(sorter);
-
-    JScrollPane scrollPane = new JScrollPane(userTable);
-    scrollPane.putClientProperty("JScrollBar.showButtons", true);
-    userTablePanel.add(scrollPane);
-
-    return userTablePanel;
-  }
 
   public void fireUserSelectionEvent(User user) {
     for (LoginListener listener : listeners)
@@ -190,15 +166,17 @@ public class LeaderPanel extends JPanel {
     } catch (java.util.regex.PatternSyntaxException e) {
       return;
     }
-    sorter.setRowFilter(filter);
+    model.getSorter().setRowFilter(filter);
   }
 
   public void registerActionListener(ActionListener listener) {
     btnConfirm.setActionCommand(GameConstants.CONFIRM_USER);
     btnPrevious.setActionCommand(GameConstants.PREVIOUS);
     btnQuit.setActionCommand(GameConstants.QUIT);
+    btnDelete.setActionCommand(GameConstants.DELETE_USER);
 
     btnConfirm.addActionListener(listener);
+    btnDelete.addActionListener(listener);
     btnQuit.addActionListener(listener);
     btnPrevious.addActionListener(listener);
 
@@ -212,6 +190,17 @@ public class LeaderPanel extends JPanel {
       } catch (IndexOutOfBoundsException ex) {
         ex.printStackTrace();
       }
+    });
+    btnDelete.addActionListener(e -> {
+      try {
+        int row = userTable.getSelectedRow();
+        userTable.clearSelection();
+        User selectedUser = getUserTableModel().getUserDataAt(row);
+        getUserTableModel().delete(selectedUser);
+        DatabaseHandler.USER_DAO.delete(selectedUser);
+      } catch (IndexOutOfBoundsException ex) {
+      }
+
     });
 
 
