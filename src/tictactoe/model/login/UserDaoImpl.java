@@ -1,6 +1,7 @@
 package tictactoe.model.login;
 
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,6 @@ public class UserDaoImpl implements UserDao {
     try {
       var statement = connection.prepareStatement("Delete from users where userid=?");
       statement.setInt(1, u.getID());
-
       statement.executeUpdate();
       statement.close();
     } catch (SQLException e) {
@@ -67,7 +67,9 @@ public class UserDaoImpl implements UserDao {
     return Optional.empty();
   }
 
+
   @Override
+  @SuppressWarnings("unused")
   public void save(User u) {
     var connection = Database.getInstance().getConnection();
     try {
@@ -75,11 +77,11 @@ public class UserDaoImpl implements UserDao {
       var sqlite = "INSERT INTO users (userid, username,wins,losses,score)" + "VALUES (?,?,?,?,?)"
           + "ON CONFLICT(userid) DO UPDATE SET "
           + "wins = excluded.wins, losses = excluded.losses, score = excluded.score;";
-      var mysql = "insert into users (userid, username, wins, losses,score) "
-          + "values (?,?,?,?,?) on duplicate key update "
-          + "username = values(username), wins =values(wins), losses = values(losses),score = values(score);";
+      var mysql = "INSERT INTO users (userid, username, wins, losses,score) "
+          + "VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE "
+          + "username = VALUES(username), wins =VALUES(wins), losses = VALUES(losses),score = VALUES(score);";
 
-      var statement = connection.prepareStatement(mysql);
+      var statement = connection.prepareStatement(sqlite);
 
       statement.setInt(1, u.getID());
       statement.setString(2, u.getName());
@@ -93,6 +95,37 @@ public class UserDaoImpl implements UserDao {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void update(User user) {
+    Connection connection = Database.getInstance().getConnection();
+    var rank = 0;
+    var username = "";
+    var wins = 0;
+    var losses = 0;
+    try {
+      var statement =
+          connection.prepareStatement("SELECT row_num,userid,username,wins,losses,score FROM"
+              + " (SELECT row_number() OVER (ORDER BY score DESC) AS row_num, userid ,username,wins,losses,score from users) AS t "
+              + "WHERE userid = ?;");
+      statement.setInt(1, user.getID());
+      var resultSet = statement.executeQuery();
+      while (resultSet.next()) {
+        rank = resultSet.getInt(1);
+        username = resultSet.getString(3);
+        wins = resultSet.getInt(4);
+        losses = resultSet.getInt(5);
+
+      }
+    } catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    user.setRank(rank);
+    user.setName(username);
+    user.setWins(wins);
+    user.setLosses(losses);
+
   }
 
 }

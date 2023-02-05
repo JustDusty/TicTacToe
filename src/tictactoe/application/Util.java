@@ -8,14 +8,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.UUID;
-import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public final class Util {
-  public static final Logger LOGGER = Logger.getLogger("GameLog");
   public static final Dimension smallPanelSize = new Dimension(300, 170);
   public static final Dimension largePanelSize = new Dimension(410, 530);
 

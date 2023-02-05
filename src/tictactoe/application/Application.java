@@ -57,16 +57,15 @@ public class Application {
       db.connect();
       var connection = db.getConnection();
       var statement = connection.createStatement();
-      var mysql =
-          "CREATE TABLE IF NOT EXISTS users (" + "userid INTEGER PRIMARY KEY  NOT NULL default "
-              + user.getID() + ",username TEXT NOT NULL," + "wins INTEGER NOT NULL,"
-              + "losses INTEGER NOT NULL," + "score DECIMAL(8,2) NOT NULL," + "UNIQUE (userid));";
-      var sqlite = "create table if not exists users "
-          + "(userid integer primary key not null UNIQUE default " + user.getID()
-          + "+,username text not null," + "wins integer not null," + "losses integer not null,"
-          + "score decimal(8,2) not null;";
+      var mysql = "CREATE TABLE IF NOT EXISTS users ("
+          + "userid INTEGER PRIMARY KEY  NOT NULL ,username TEXT NOT NULL,"
+          + "wins INTEGER NOT NULL," + "losses INTEGER NOT NULL," + "score DECIMAL(8,2) NOT NULL,"
+          + "UNIQUE (userid));";
+      var sqlite = "CREATE TABLE IF NOT EXISTS users "
+          + "(userid INTEGER PRIMARY KEY NOT NULL UNIQUE ,username TEXT NOT NULL,"
+          + "wins INTEGER NOT NULL," + "losses integer NOT NULL," + "score DECIMAL(8,2) NOT NULL);";
 
-      statement.execute(mysql);
+      statement.execute(sqlite);
       statement.close();
 
       DatabaseHandler dbHandler =

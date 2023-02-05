@@ -1,8 +1,6 @@
 package tictactoe.model.login;
 
 import java.util.List;
-import java.util.logging.Level;
-import tictactoe.application.Util;
 
 public class DatabaseHandler {
   public static final UserDao USER_DAO = new UserDaoImpl();
@@ -21,11 +19,8 @@ public class DatabaseHandler {
 
   public void saveToDatabase() {
     List<User> list = model.getRows();
-    for (User user : list) {
+    for (User user : list)
       USER_DAO.save(user);
-      Util.LOGGER.log(Level.INFO,
-          () -> "Successfully saved user: " + user.getID() + " - " + user.getName());
-    }
   }
 
 

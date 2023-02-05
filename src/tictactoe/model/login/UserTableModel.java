@@ -1,7 +1,6 @@
 package tictactoe.model.login;
 
 import java.awt.Dimension;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -15,8 +14,8 @@ public class UserTableModel extends AbstractTableModel {
   private static final long serialVersionUID = 1L;
   protected static final String[] COLUMNS = {"Rank", "Username", "Wins", "Losses", "Score"};
   private JTable userTable;
-  private TableRowSorter<UserTableModel> sorter;
-  private List<User> rows;
+  private transient TableRowSorter<UserTableModel> sorter;
+  private transient List<User> rows;
 
   public UserTableModel() {
     rows = new ArrayList<>();
@@ -89,22 +88,7 @@ public class UserTableModel extends AbstractTableModel {
   @Override
   public Object getValueAt(int row, int column) {
     User user = getUserDataAt(row);
-    var connection = Database.getInstance().getConnection();
-    int rank = 0;
-    try {
-      var statement = connection.prepareStatement(
-          "SELECT row_num from (SELECT row_number() OVER (ORDER BY score DESC) AS row_num, username,userid from users) as t "
-              + "WHERE userid = ?;");
-      statement.setInt(1, user.getID());
-      var resultSet = statement.executeQuery();
-      while (resultSet.next())
-        rank = resultSet.getInt(1);
-
-    } catch (SQLException ex) {
-      ex.printStackTrace();
-    }
-    user.setRank(rank);
-
+    DatabaseHandler.USER_DAO.update(user);
 
     return switch (column) {
       case 0 -> user.getRank();

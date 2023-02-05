@@ -4,25 +4,27 @@ package tictactoe.model.login;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import tictactoe.application.Util;
 
+@SuppressWarnings("unused")
 public class Database {
-  public static Database instance = new Database();
+  private static Database instance = new Database();
   private Connection connection;
+  private String user = "yassine";
+  private String pass = "yassine";
 
   private Database() {}
 
 
   public static Database getInstance() {
+    if (instance == null)
+      instance = new Database();
     return instance;
   }
 
   public void connect() throws SQLException {
+    // connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/yassine ", user, pass);
     connection =
-        DriverManager.getConnection("jdbc:mysql://localhost:3306/demo", "student", "student");
-    // connection = DriverManager.getConnection("jdbc:sqlite:leaderboard.db");
-    Util.LOGGER.log(Level.INFO, "Connected to MySQL Database");
+        DriverManager.getConnection("jdbc:sqlite:src/tictactoe/model/login/leaderboard.db");
   }
 
   public void disconnect() throws SQLException {

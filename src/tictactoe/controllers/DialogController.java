@@ -26,6 +26,8 @@ public class DialogController extends Controller implements ActionListener {
     loginFrame.registerActionListener(this);
     gamePanel.registerActionListener(this);
 
+
+
     JFrame gameFrame = (JFrame) SwingUtilities.getWindowAncestor(gamePanel);
     Controller.maskFrame(gameFrame);
   }

@@ -1,7 +1,6 @@
 package tictactoe.view.login;
 
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -19,6 +18,7 @@ import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 import tictactoe.application.GameConstants;
 import tictactoe.application.Util;
 import tictactoe.controllers.LoginListener;
@@ -28,8 +28,6 @@ import tictactoe.model.login.UserTableModel;
 
 public class LeaderPanel extends JPanel {
   private static final long serialVersionUID = 1L;
-
-
 
   private UserTableModel model;
   private JTable userTable;
@@ -41,10 +39,9 @@ public class LeaderPanel extends JPanel {
   private JButton btnDelete;
   private JButton btnQuit;
 
-
   private transient List<LoginListener> listeners = new ArrayList<>();
 
-  private boolean isBeingModified = false;
+  private boolean isFiltering = false;
 
 
   public LeaderPanel(UserTableModel model) {
@@ -112,14 +109,14 @@ public class LeaderPanel extends JPanel {
     add(mainPanel);
     Util.setFontStyle(mainPanel);
 
-    setTableFilterListeners();
+    setTableListeners();
 
   }
+
 
   public void addLoginListener(LoginListener listener) {
     listeners.add(listener);
   }
-
 
   public void fireUserSelectionEvent(User user) {
     for (LoginListener listener : listeners)
@@ -130,21 +127,21 @@ public class LeaderPanel extends JPanel {
     return btnConfirm;
   }
 
+
   public JButton getBtnPrevious() {
     return btnPrevious;
   }
+
+
 
   public JButton getBtnQuit() {
     return btnQuit;
   }
 
-
   @Override
   public Dimension getPreferredSize() {
     return Util.largePanelSize;
   }
-
-
 
   public JTable getUserTable() {
     return userTable;
@@ -191,51 +188,52 @@ public class LeaderPanel extends JPanel {
         ex.printStackTrace();
       }
     });
-    btnDelete.addActionListener(e -> {
-      try {
-        int row = userTable.getSelectedRow();
-        userTable.clearSelection();
-        User selectedUser = getUserTableModel().getUserDataAt(row);
-        getUserTableModel().delete(selectedUser);
-        DatabaseHandler.USER_DAO.delete(selectedUser);
-      } catch (IndexOutOfBoundsException ex) {
-        ex.printStackTrace();
-      }
 
+    btnDelete.addActionListener(e -> {
+      int row = userTable.getSelectedRow();
+      if (row != -1) {
+        userTable.clearSelection();
+        User selectedUser = model.getUserDataAt(row);
+        model.delete(selectedUser);
+        DatabaseHandler.USER_DAO.delete(selectedUser);
+      }
     });
+
 
 
   }
 
-  public void setTableFilterListeners() {
-    userTable.getSelectionModel().addListSelectionListener(e -> EventQueue.invokeLater(() -> {
-      isBeingModified = true;
+  public void setTableListeners() {
+    ListSelectionListener listListener = e -> {
+      isFiltering = true;
       int row = userTable.getSelectedRow();
       if (row < 0)
-        txtUser.setText("");
+        txtUser.setText(null);
       else {
-        String name = userTable.getValueAt(row, 0).toString();
+        String name = userTable.getValueAt(row, 1).toString();
         txtUser.setText(name);
       }
-      isBeingModified = false;
-    }));
+      isFiltering = false;
+    };
+    userTable.getSelectionModel().addListSelectionListener(listListener);
+
 
     txtUser.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void changedUpdate(DocumentEvent e) {
-        if (!isBeingModified)
+        if (!isFiltering)
           newFilter();
       }
 
       @Override
       public void insertUpdate(DocumentEvent e) {
-        if (!isBeingModified)
+        if (!isFiltering)
           newFilter();
       }
 
       @Override
       public void removeUpdate(DocumentEvent e) {
-        if (!isBeingModified)
+        if (!isFiltering)
           newFilter();
       }
 

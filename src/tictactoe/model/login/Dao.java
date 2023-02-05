@@ -12,4 +12,6 @@ public interface Dao<U> {
   Optional<User> getByID(int id);
 
   void save(U u);
+
+  void update(U u);
 }
