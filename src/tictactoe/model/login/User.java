@@ -7,7 +7,7 @@ public class User {
   private int id;
   private String name;
   private int wins;
-
+  private int rank;
   private int losses;
 
 
@@ -56,7 +56,7 @@ public class User {
   }
 
   public int getRank() {
-    return 0;
+    return this.rank;
 
   }
 
@@ -112,6 +112,10 @@ public class User {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public void setRank(int rank) {
+    this.rank = rank;
   }
 
   public void setWins(int newWin) {

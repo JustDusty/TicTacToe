@@ -162,7 +162,7 @@ public class LeaderPanel extends JPanel {
     userTable.clearSelection();
     RowFilter<UserTableModel, Object> filter = null;
     try {
-      filter = RowFilter.regexFilter(txtUser.getText(), 0);
+      filter = RowFilter.regexFilter(txtUser.getText(), 1);
     } catch (java.util.regex.PatternSyntaxException e) {
       return;
     }
@@ -199,6 +199,7 @@ public class LeaderPanel extends JPanel {
         getUserTableModel().delete(selectedUser);
         DatabaseHandler.USER_DAO.delete(selectedUser);
       } catch (IndexOutOfBoundsException ex) {
+        ex.printStackTrace();
       }
 
     });

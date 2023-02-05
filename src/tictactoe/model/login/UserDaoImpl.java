@@ -71,9 +71,15 @@ public class UserDaoImpl implements UserDao {
   public void save(User u) {
     var connection = Database.getInstance().getConnection();
     try {
-      var statement =
-          connection.prepareStatement("insert into users (userid, username, wins, losses,score) "
-              + "values (?,?,?,?,?) on duplicate key update username = values(username), wins = values(wins), losses = values(losses),score = values(score);");
+
+      var sqlite = "INSERT INTO users (userid, username,wins,losses,score)" + "VALUES (?,?,?,?,?)"
+          + "ON CONFLICT(userid) DO UPDATE SET "
+          + "wins = excluded.wins, losses = excluded.losses, score = excluded.score;";
+      var mysql = "insert into users (userid, username, wins, losses,score) "
+          + "values (?,?,?,?,?) on duplicate key update "
+          + "username = values(username), wins =values(wins), losses = values(losses),score = values(score);";
+
+      var statement = connection.prepareStatement(mysql);
 
       statement.setInt(1, u.getID());
       statement.setString(2, u.getName());

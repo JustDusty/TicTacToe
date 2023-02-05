@@ -93,17 +93,21 @@ public class UserTableModel extends AbstractTableModel {
     int rank = 0;
     try {
       var statement = connection.prepareStatement(
-          "select row_num from (select row_number() over (ORDER BY score DESC) as row_num,username,userid from users) as t "
-              + "where userid = ?;");
+          "SELECT row_num from (SELECT row_number() OVER (ORDER BY score DESC) AS row_num, username,userid from users) as t "
+              + "WHERE userid = ?;");
       statement.setInt(1, user.getID());
       var resultSet = statement.executeQuery();
       while (resultSet.next())
         rank = resultSet.getInt(1);
-    } catch (SQLException e) {
-      e.printStackTrace();
+
+    } catch (SQLException ex) {
+      ex.printStackTrace();
     }
+    user.setRank(rank);
+
+
     return switch (column) {
-      case 0 -> rank;
+      case 0 -> user.getRank();
       case 1 -> user.getName();
       case 2 -> user.getWins();
       case 3 -> user.getLosses();
