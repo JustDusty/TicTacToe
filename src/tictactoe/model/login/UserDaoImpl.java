@@ -6,6 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 
+ * Implementation of the Data Access Object for the handling of user data
+ *
+ */
 public class UserDaoImpl implements UserDao {
 
   public void createTable() {
@@ -98,8 +103,13 @@ public class UserDaoImpl implements UserDao {
     }
   }
 
+  /**
+   * Updates the rank of the user based on the score in the SQL Database
+   * 
+   * @param user : the user
+   */
   @Override
-  public void update(User u) {
+  public void update(User user) {
     var connection = Database.getInstance().getConnection();
     int rank = 0;
     try {
@@ -107,12 +117,12 @@ public class UserDaoImpl implements UserDao {
           "SELECT row_num FROM (SELECT row_number() OVER (ORDER BY score DESC) AS row_num,userid from users) AS t \r\n"
               + "WHERE userid = ?;";
       var statement = connection.prepareStatement(sql);
-      statement.setInt(1, u.getID());
+      statement.setInt(1, user.getID());
       var resultSet = statement.executeQuery();
       while (resultSet.next())
         rank = resultSet.getInt(1);
 
-      u.setRank(rank);
+      user.setRank(rank);
 
     } catch (SQLException ex) {
       ex.printStackTrace();

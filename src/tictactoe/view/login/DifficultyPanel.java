@@ -27,7 +27,7 @@ public class DifficultyPanel extends JPanel {
     createDifficultyPanel();
   }
 
-  public void createDifficultyPanel() {
+  private void createDifficultyPanel() {
 
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());

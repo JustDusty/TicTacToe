@@ -41,6 +41,11 @@ public class GamePanel extends JPanel {
 
   private JMenuItem itemHard;
 
+  /**
+   * Constructor panel containing the main view of the application, representing the actual game.
+   * The panel also contains all the buttons responsible for manipulating the game settings, as well
+   * as updating labels indicating the current state of the game.
+   */
   public GamePanel() {
 
     this.gameView = new GameView();
@@ -48,7 +53,7 @@ public class GamePanel extends JPanel {
 
   }
 
-  public TitledBorder createDifficultyDisplay() {
+  private TitledBorder createDifficultyDisplay() {
     TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
         "Difficulty: Easy", TitledBorder.CENTER, TitledBorder.BOTTOM);
     border.setTitleFont(UIManager.getFont(FONT));
@@ -56,7 +61,7 @@ public class GamePanel extends JPanel {
   }
 
 
-  public JPopupMenu createDifficultyPopup() {
+  private JPopupMenu createDifficultyPopup() {
     String[] fontStyle = {"FlatLaf.style", "font: 100% $light.font"};
 
     JPopupMenu popupDifficulty = new JPopupMenu();
@@ -72,7 +77,7 @@ public class GamePanel extends JPanel {
     return popupDifficulty;
   }
 
-  public void createGamePanel() {
+  private void createGamePanel() {
     JPanel mainPanel = new JPanel();
     JPanel scorePanel = createScorePanel();
     JPanel optionsPanel = createOptionsPanel();
@@ -93,7 +98,7 @@ public class GamePanel extends JPanel {
 
   }
 
-  public JPanel createOptionsPanel() {
+  private JPanel createOptionsPanel() {
     String[] fontStyle = {"FlatLaf.style", "font: 140% $light.font"};
 
 
@@ -131,7 +136,7 @@ public class GamePanel extends JPanel {
   }
 
 
-  public TitledBorder createPlayerDisplay() {
+  private TitledBorder createPlayerDisplay() {
     TitledBorder border = BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(),
         "Current Player: ", TitledBorder.CENTER, TitledBorder.ABOVE_TOP);
     border.setTitleFont(UIManager.getFont(FONT));
@@ -139,7 +144,7 @@ public class GamePanel extends JPanel {
 
   }
 
-  public JPanel createScorePanel() {
+  private JPanel createScorePanel() {
     JPanel scorePanel = new JPanel();
     Font font = UIManager.getFont(FONT);
     scorePanel.setLayout(new GridBagLayout());

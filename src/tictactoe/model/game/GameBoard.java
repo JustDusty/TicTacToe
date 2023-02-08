@@ -1,3 +1,4 @@
+
 package tictactoe.model.game;
 
 import java.beans.PropertyChangeListener;
@@ -18,7 +19,7 @@ public class GameBoard {
   private String currentDifficulty = GameConstants.EASY;
   private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-  /** GameBoard represented as list of 9 elements */
+
   public GameBoard() {
     initializeBoard();
 
@@ -35,31 +36,20 @@ public class GameBoard {
       cells.add(original.get(i));
   }
 
-  public static String getNextTurn(String string) {
-    return string.equals("o") ? "x" : "o";
-  }
-
-  public int computerMove() {
-    int move = -1;
-
-    if (getCurrentDifficulty().equals(GameConstants.EASY))
-      move = GameAlgorithm.getRandomMove(getPossibleMoves());
-    else if (getCurrentDifficulty().equals(GameConstants.HARD))
-      move = GameAlgorithm.findOptimalChoice(this, computer, human);
-    return move;
-  }
-
-
 
   /**
-   * @param i
-   * @return value of cell at index i
+   * Helper method that changes the value representing the current player to the opposing value.
+   * Changes "x" to "o" and vice versa.
+   * 
+   * @param string
+   * @return
    */
-  public String get(int i) {
-    return cells.get(i);
+  public static String getNextTurn(String player) {
+    return player.equals("o") ? "x" : "o";
   }
 
-  public String getBoardState() {
+
+  private String getBoardState() {
     return "," + get(0) + get(1) + get(2) + "," + get(3) + get(4) + get(5) + "," + get(6) + get(7)
         + get(8)
 
@@ -68,6 +58,48 @@ public class GameBoard {
 
         + "," + get(0) + get(4) + get(8) + "," + get(2) + get(4) + get(6);
   }
+
+
+
+  /**
+   * Values that have not yet been played by either the computer or the player are represented by a
+   * String value equal to "none".
+   *
+   * @return a list of indexes of all cells with "none" values
+   */
+  List<Integer> getPossibleMoves() {
+    List<Integer> empty = new ArrayList<>();
+    for (int i = 0; i < cells.size(); i++)
+      if (cells.get(i).equals("none"))
+        empty.add(i);
+    return empty;
+  }
+
+
+  /**
+   * Calculates the optimal move to be made by the AI based on the chosen game difficulty
+   * 
+   * @return move: the computer's move
+   */
+  public int computerMove() {
+    int move = -1;
+    if (getCurrentDifficulty().equals(GameConstants.EASY))
+      move = GameAlgorithm.getRandomMove(getPossibleMoves());
+    else if (getCurrentDifficulty().equals(GameConstants.HARD))
+      move = GameAlgorithm.findOptimalChoice(this, computer, human);
+    return move;
+  }
+
+  /**
+   * Gets the value in the board occupying the position i. Represented as "x" or "o"
+   * 
+   * @param i
+   * @return value of cell at index i
+   */
+  public String get(int i) {
+    return cells.get(i);
+  }
+
 
   /** gets cells in board as a list */
   public List<String> getCells() {
@@ -79,7 +111,6 @@ public class GameBoard {
     return computer;
   }
 
-
   public String getCurrentDifficulty() {
     return currentDifficulty;
   }
@@ -90,18 +121,6 @@ public class GameBoard {
 
   public String getHumanPlayer() {
     return human;
-  }
-
-  /**
-   *
-   * @return a list of indexes of all cells with "none" values
-   */
-  public List<Integer> getPossibleMoves() {
-    List<Integer> empty = new ArrayList<>();
-    for (int i = 0; i < cells.size(); i++)
-      if (cells.get(i).equals("none"))
-        empty.add(i);
-    return empty;
   }
 
 
@@ -125,7 +144,10 @@ public class GameBoard {
   }
 
   /**
-   * Initialises board with 9 "none" Strings
+   * Initialises board with 9 Strings representing an empty board and randomizes the choice for the
+   * starting player. The starting players is always "x". if the human player gets x, they will
+   * begin first, otherwise the computer plays first.
+   * 
    */
   public void initializeBoard() {
     setCurrentPlayer("x");
@@ -138,6 +160,11 @@ public class GameBoard {
 
   }
 
+  /**
+   * Checks if there is a winning combination in the current board.
+   * 
+   * @return
+   */
   public boolean isGameOver() {
     return !getWinner().equals("unknown");
 
@@ -148,12 +175,21 @@ public class GameBoard {
   }
 
   /**
-   * resets board to initial state
+   * resets the board to its initial state using the {@link #initializeBoard() initializeBoard}
+   * method.
+   * 
    */
   public void resetBoard() {
     initializeBoard();
   }
 
+
+  /**
+   * Changes the current difficulty and notifies all registered property change listeners of the
+   * change.
+   * 
+   * @param difficulty
+   */
   public void setCurrentDifficulty(String difficulty) {
     String old = this.currentDifficulty;
     this.currentDifficulty = difficulty;
@@ -161,6 +197,11 @@ public class GameBoard {
   }
 
 
+  /**
+   * Changes the current player and notifies all registered property change listeners of the change.
+   * 
+   * @param player
+   */
   public void setCurrentPlayer(String player) {
     String old = this.currentPlayer;
     this.currentPlayer = player;
@@ -181,3 +222,4 @@ public class GameBoard {
 
 
 }
+

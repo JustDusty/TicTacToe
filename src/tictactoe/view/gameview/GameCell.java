@@ -15,13 +15,19 @@ public class GameCell extends JButton {
 
     protected Color color = Color.LIGHT_GRAY;
 
-    public abstract void draw(Graphics2D g2);
+    protected abstract void draw(Graphics2D g2);
 
-    public int getSize() {
+    protected int getSize() {
       return DIM;
     }
 
-    public void setAntiAliasing(Graphics2D g2) {
+
+    /**
+     * Makes the painted component in a container look smoother and less pixelated
+     * 
+     * @param g2 : Graphics2D object
+     */
+    protected void setAntiAliasing(Graphics2D g2) {
       g2.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
           RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -72,17 +78,26 @@ public class GameCell extends JButton {
     this.cellValue = "none";
   }
 
+  private void setClicked() {
+    setEnabled(false);
+    repaint();
+    validate();
+  }
+
   public int getCellID() {
     return cellID;
   }
+
 
   @Override
   public Dimension getPreferredSize() {
     return new Dimension(200, 200);
   }
 
-
-
+  /**
+   * Draws an O shape if the cell has been marked by the O player, and X if the cell has been marked
+   * by the X player.
+   */
   @Override
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
@@ -100,15 +115,15 @@ public class GameCell extends JButton {
 
   }
 
+  /**
+   * Draws a shape on the cell based on the given value, "x" or "o", and makes the cell unclickable,
+   * indicating the cell has been played already.
+   * 
+   * @param value
+   */
   public void setCellValue(String value) {
     setClicked();
     this.cellValue = value;
-  }
-
-  public void setClicked() {
-    setEnabled(false);
-    repaint();
-    validate();
   }
 
 }

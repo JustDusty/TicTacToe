@@ -16,11 +16,21 @@ public class UserTableModel extends AbstractTableModel {
   private transient UserDao userDao = new UserDaoImpl();
   private transient TableRowSorter<UserTableModel> sorter;
 
+
+  /**
+   * Confirms all changes to users made during the game session and saves them to the database
+   */
   public UserTableModel() {
     initializeModel();
     Runtime.getRuntime().addShutdownHook(new Thread(this::saveAll));
   }
 
+
+  /**
+   * Fills the table model using the database using the {@link UserDaoImpl user Data Access Object}.
+   * <br>
+   * Sets the default sorter for the table.<br>
+   */
   private void initializeModel() {
     rows = new ArrayList<>();
     List<User> users = userDao.getAll();
@@ -34,17 +44,36 @@ public class UserTableModel extends AbstractTableModel {
       userDao.save(user);
   }
 
+  /**
+   * Adds a list of users to the model and notifies the corresponding JTable of the update to be
+   * redrawn to display the added users.
+   * 
+   * @param users : the list of users to be added
+   */
   public void add(List<User> users) {
     rows.addAll(users);
     fireTableDataChanged();
   }
 
+  /**
+   * Adds a user to the model and notifies the corresponding JTable of the update to be redrawn to
+   * display the added user.
+   * 
+   * @param user : the user to be added
+   */
   public void add(User user) {
     rows.add(user);
     userDao.save(user);
     fireTableDataChanged();
   }
 
+
+  /**
+   * Removes a user to the model and notifies the corresponding JTable of the update to be redrawn
+   * to remove the deleted user from the display.
+   * 
+   * @param user
+   */
   public void delete(User user) {
     rows.remove(user);
     userDao.delete(user);
@@ -83,6 +112,11 @@ public class UserTableModel extends AbstractTableModel {
     return userTable;
   }
 
+
+
+  /**
+   * Responsible for displaying the data from the database as it is being retrieved.
+   */
   @Override
   public Object getValueAt(int row, int column) {
     User user = getUserDataAt(row);

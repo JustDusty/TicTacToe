@@ -20,11 +20,15 @@ public class WelcomePanel extends JPanel {
 
   private JButton btnQuit;
 
+  /**
+   * The introductory panel. Contains buttons to view the {@link LeaderPanel leaderboard panel} or
+   * continue to the next panel
+   */
   public WelcomePanel() {
     createWelcomeFrame();
   }
 
-  public void createWelcomeFrame() {
+  private void createWelcomeFrame() {
 
     JPanel mainPanel = new JPanel();
 

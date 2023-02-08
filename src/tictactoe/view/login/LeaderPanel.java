@@ -141,6 +141,14 @@ public class LeaderPanel extends JPanel {
     model.getSorter().setRowFilter(filter);
   }
 
+
+  /**
+   * Links the filtering text area with the table.<br>
+   * Matches the text written in the filter area with all possible matching usernames in the user
+   * table.<br>
+   * If a user is selected from the table, the username will be displayed in the filtering area
+   * 
+   */
   private void setTableFilterListeners() {
     userTable.getSelectionModel().addListSelectionListener(e -> EventQueue.invokeLater(() -> {
       isBeingModified = true;

@@ -26,7 +26,7 @@ public class GamemodePanel extends JPanel {
     createGamemodePanel();
   }
 
-  public void createGamemodePanel() {
+  private void createGamemodePanel() {
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());
 

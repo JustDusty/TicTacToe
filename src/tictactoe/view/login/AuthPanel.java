@@ -33,7 +33,7 @@ public class AuthPanel extends JPanel {
 
   }
 
-  public void createAuthPanel() {
+  private void createAuthPanel() {
 
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout(new GridBagLayout());

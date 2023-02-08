@@ -14,7 +14,7 @@ public class GameView extends JPanel {
   private List<GameCell> gameCells;
 
   /**
-   * Initialises Tic Tac Toe UI
+   * Creates the main view of the application as a 3x3 grid of {@link #gameCells cells}
    */
   public GameView() {
     gameCells = new ArrayList<>();
@@ -30,13 +30,17 @@ public class GameView extends JPanel {
 
   }
 
+
+  /**
+   * gets the Game Cell that corresponds to the parameter representing the cell's ID value.
+   * 
+   * @param i
+   * @return
+   */
   public GameCell getCellByID(int i) {
-    return getCellList().get(i);
+    return gameCells.get(i);
   }
 
-  public List<GameCell> getCellList() {
-    return gameCells;
-  }
 
   public void registerActionListener(ActionListener listener) {
     for (GameCell gameCell : gameCells) {
@@ -46,7 +50,10 @@ public class GameView extends JPanel {
     }
   }
 
-
+  /**
+   * Empties all the cells in the board, and makes them clickable.
+   * 
+   */
   public void resetView() {
     for (GameCell gameCell : gameCells) {
       gameCell.setCellValue("none");

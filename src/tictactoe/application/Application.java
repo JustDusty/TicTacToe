@@ -29,7 +29,7 @@ public class Application {
   private static LoginFrame loginFrame;
   private static Database db = Database.getInstance();
 
-  static JFrame createGameFrame(GamePanel gamePanel) {
+  private static JFrame createGameFrame(GamePanel gamePanel) {
     JFrame f = new JFrame();
     f.add(gamePanel);
     gamePanel.setEnabled(false);
@@ -41,7 +41,11 @@ public class Application {
     return f;
   }
 
-  static void initApp() {
+
+  /**
+   * Links all controllers and listeners
+   */
+  private static void initApp() {
     optionsController.setGameController(gameController);
     gameController.setUser(user);
     optionsController.setUser(user);
@@ -51,7 +55,11 @@ public class Application {
 
   }
 
-  static void initDatabase() {
+  /**
+   * Connects to the Database using the Database Singleton and creates a table for saving user data
+   * if the user is connecting for the first time.
+   */
+  private static void initDatabase() {
     try {
       db.connect();
       var connection = db.getConnection();
@@ -70,11 +78,10 @@ public class Application {
     }
   }
 
-
-  static void runApp() {
-    user = new User(Util.generateUniqueId(), "Guest");
-    initDatabase();
-
+  /**
+   * Initializes all the views, the models and the controllers
+   */
+  private static void initViewsAndControllers() {
     gameBoard = new GameBoard();
     gamePanel = new GamePanel();
 
@@ -85,7 +92,18 @@ public class Application {
     gameController = new GameController(gamePanel, gameBoard);
     optionsController = new OptionsController(gamePanel, gameBoard);
     dialogController = new DialogController(loginFrame, gamePanel);
+    gameController.setUser(user);
+    optionsController.setUser(user);
+  }
 
+
+  /**
+   * Starts the app with a placeholder Guest user
+   */
+  private static void runApp() {
+    user = new User(Util.generateUniqueId(), "Guest");
+    initDatabase();
+    initViewsAndControllers();
     initApp();
 
   }

@@ -43,6 +43,10 @@ public class OptionsController extends Controller
       gameBoard.setCurrentDifficulty(GameConstants.HARD);
   }
 
+  /**
+   * Updates the secondary view responsible for handling game settings and displays the new values
+   * after being notified by the user and the game model.
+   */
   @Override
   public void propertyChange(PropertyChangeEvent event) {
     if (event.getPropertyName().equals("currentPlayer")) {

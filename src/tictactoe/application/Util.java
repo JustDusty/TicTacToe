@@ -35,6 +35,11 @@ public final class Util {
     }
   }
 
+  /**
+   * Creates a virtually unique large integer using the built-in UUID class in java
+   * 
+   * @return the ID
+   */
   public static int generateUniqueId() {
     UUID idOne = UUID.randomUUID();
     String str = "" + idOne;
@@ -44,11 +49,28 @@ public final class Util {
     return Integer.parseInt(str);
   }
 
+
+  /**
+   * This method will apply the {@link #setFLFontStyle(Component) chosen} FlatLaf fontStyle to
+   * buttons, labels and textfields of a JPanel
+   * 
+   * @param panel : The JPanel containing the components to be modified
+   */
   public static void setFontStyle(JPanel panel) {
     for (Component comp : panel.getComponents())
       setFLFontStyle(comp);
   }
 
+
+  /**
+   * Method to link to Swing containers to make them behave similarly.
+   * 
+   * If the parent window is moved, the child window will keep the same position relative to its
+   * parent. If the parent window is closed or resized the same will happen to the child window
+   * 
+   * @param main : the parent window
+   * @param secondary : the child window
+   */
   public static void syncUIComponents(Window main, Window secondary) {
     secondary.setLocationRelativeTo(main);
     secondary.setVisible(true);

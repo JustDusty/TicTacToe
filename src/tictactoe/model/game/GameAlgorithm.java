@@ -36,42 +36,46 @@ public class GameAlgorithm {
   }
 
   /**
-   * human-like algorithm, finds the best choice for the current state of the game
+   * human-like algorithm, finds the best choice for the player for the current state of the
+   * game.<br>
+   * The method checks if the game is ongoing.<br>
+   * The algorithm will prioritize looking for a winning move. If no winning move is found, the
+   * algorithm will find a move to block the opponent's winning move. If the opponent has no winning
+   * options, the algorithm will find the move to complete two cells in a row. <br>
+   * If none of these conditions are met the algorithm will return a random move on the board in the
+   * empty cells.
    *
-   * @param player
-   * @param opponent
+   * @param gameBoard : the current state of the board
+   * @param player : the player that will play this move
+   * @param opponent : the opponent
    *
+   * @see #findWinningCombination(GameBoard, String) findWinningCombination
    */
   public static int findOptimalChoice(GameBoard gameBoard, String player, String opponent) {
     List<Integer> moves = gameBoard.getPossibleMoves();
 
-    // finds a move to play if the game is still ongoing
     if (gameBoard.getWinner().equals("unknown")) {
 
-      // if no moves have been played so far, play a random cell
       if (moves.size() == 9)
         return getRandomMove(moves);
 
-      // checks board for potential player wins as priority move
       int playerMove = findWinningCombination(gameBoard, player);
       if (playerMove != -1)
         return playerMove;
 
-      // checks board for potential opponent wins, and blocks it
       int opponentMove = findWinningCombination(gameBoard, opponent);
       if (opponentMove != -1)
         return opponentMove;
 
-      // if no move is found, play a random move
       return getRandomMove(moves);
     }
     return -1;
   }
 
   /**
-   * selects a random move from available cells
+   * selects a random move from the cells that have not yet been played
    *
-   * @param moves
+   * @param moves : a list of available moves
    *
    */
   public static int getRandomMove(List<Integer> moves) {

@@ -15,6 +15,11 @@ public class User {
 
   private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+  /**
+   * 
+   * @param id : the randomly generated UUID as a integer.
+   * @param name : the username
+   */
   public User(int id, String name) {
     this.id = id;
     this.name = name;
@@ -22,6 +27,13 @@ public class User {
     this.losses = 0;
   }
 
+  /**
+   * 
+   * @param id : the randomly generated UUID as a integer.
+   * @param username : the username
+   * @param wins : the number of wins for this user
+   * @param losses : the number of losses for this user
+   */
   public User(int id, String username, int wins, int losses) {
     this.id = id;
     this.name = username;
@@ -40,7 +52,12 @@ public class User {
   }
 
 
-
+  /**
+   * a randomly generated UUID as an integer value using the {@link Util#generateUniqueId()
+   * generateUniqueId()} method
+   * 
+   * @return id: user's id.
+   */
   public int getID() {
     return id;
   }
@@ -61,7 +78,12 @@ public class User {
   }
 
 
-
+  /**
+   * calculates user score based on wins and losses
+   * 
+   * @return the quotient of wins and losses as a double type, or the number of wins if the losses
+   *         are 0.
+   */
   public double getScore() {
     if (losses == 0)
 
@@ -84,12 +106,22 @@ public class User {
     return h;
   }
 
+  /**
+   * Increments the user's number of losses by 1.
+   * 
+   * Notifies all property change listeners of the change.
+   */
   public void incrementLosses() {
     int old = losses;
     losses = old + 1;
     pcs.firePropertyChange("roundLoss", old, old + 1);
   }
 
+  /**
+   * Increments the user's number of wins by 1.
+   * 
+   * Notifies all property change listeners of the change.
+   */
   public void incrementWins() {
     int old = wins;
     wins = old + 1;
@@ -104,6 +136,13 @@ public class User {
     this.id = id;
   }
 
+  /**
+   * updates the number of the user's losses by the new value.
+   * 
+   * Notifies all property change listeners of the change.
+   * 
+   * @param newLoss
+   */
   public void setLosses(int newLoss) {
     int old = losses;
     losses = newLoss;
@@ -111,16 +150,35 @@ public class User {
   }
 
 
-
+  /**
+   * updates the username.
+   * 
+   * @param name : the user's new username
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+
+  /**
+   * updates the user's rank in the leaderboard. the rank is calculated from the score using an SQL
+   * Query. {@link UserDaoImpl#update(User) UserDaoImpl.update}
+   * 
+   * @param rank : integer greater or equal to 1.
+   */
   public void setRank(int rank) {
     this.rank = rank;
 
   }
 
+
+  /**
+   * updates the number of the user's wins by the new value.
+   * 
+   * Notifies all property change listeners of the change.
+   * 
+   * @param newLoss
+   */
   public void setWins(int newWin) {
     int old = wins;
     wins = newWin;
