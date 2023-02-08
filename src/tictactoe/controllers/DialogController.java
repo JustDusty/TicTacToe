@@ -8,7 +8,6 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import tictactoe.application.GameConstants;
 import tictactoe.application.Util;
-import tictactoe.model.login.DatabaseHandler;
 import tictactoe.model.login.User;
 import tictactoe.view.gameview.GamePanel;
 import tictactoe.view.login.LoginFrame;
@@ -25,8 +24,6 @@ public class DialogController extends Controller implements ActionListener {
 
     loginFrame.registerActionListener(this);
     gamePanel.registerActionListener(this);
-
-
 
     JFrame gameFrame = (JFrame) SwingUtilities.getWindowAncestor(gamePanel);
     Controller.maskFrame(gameFrame);
@@ -70,10 +67,10 @@ public class DialogController extends Controller implements ActionListener {
 
     if (command.contains(GameConstants.ENTER_USER)) {
       String username = loginFrame.getAuthPanel().getTxtUser().getText();
-      User newUser = new User(Util.generateUniqueId(), username);
-      loginFrame.getLeaderPanel().getUserTableModel().add(newUser);
-      DatabaseHandler.USER_DAO.save(newUser);
+      loginFrame.getLeaderPanel().getUserTableModel()
+          .add(new User(Util.generateUniqueId(), username));
     }
+
   }
 
   public void goToLast() {

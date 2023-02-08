@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public final class Util {
+
   public static final Dimension smallPanelSize = new Dimension(300, 170);
   public static final Dimension largePanelSize = new Dimension(410, 530);
 

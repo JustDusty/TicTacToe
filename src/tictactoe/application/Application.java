@@ -11,7 +11,6 @@ import tictactoe.controllers.GameController;
 import tictactoe.controllers.OptionsController;
 import tictactoe.model.game.GameBoard;
 import tictactoe.model.login.Database;
-import tictactoe.model.login.DatabaseHandler;
 import tictactoe.model.login.User;
 import tictactoe.view.gameview.GamePanel;
 import tictactoe.view.login.LoginFrame;
@@ -58,21 +57,14 @@ public class Application {
       var connection = db.getConnection();
       var statement = connection.createStatement();
       var mysql = "CREATE TABLE IF NOT EXISTS users ("
-          + "userid INTEGER PRIMARY KEY  NOT NULL ,username TEXT NOT NULL,"
-          + "wins INTEGER NOT NULL," + "losses INTEGER NOT NULL," + "score DECIMAL(8,2) NOT NULL,"
-          + "UNIQUE (userid));";
+          + "userid INTEGER PRIMARY KEY NOT NULL ,username TEXT NOT NULL,"
+          + "wins INTEGER NOT NULL," + "losses INTEGER NOT NULL," + "score DECIMAL(8,2) NOT NULL);";
       var sqlite = "CREATE TABLE IF NOT EXISTS users "
           + "(userid INTEGER PRIMARY KEY NOT NULL UNIQUE ,username TEXT NOT NULL,"
           + "wins INTEGER NOT NULL," + "losses integer NOT NULL," + "score DECIMAL(8,2) NOT NULL);";
-
       statement.execute(sqlite);
       statement.close();
 
-      DatabaseHandler dbHandler =
-          new DatabaseHandler(loginFrame.getLeaderPanel().getUserTableModel());
-      dbHandler.readFromDatabase();
-
-      Runtime.getRuntime().addShutdownHook(new Thread(dbHandler::saveToDatabase));
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -81,6 +73,7 @@ public class Application {
 
   static void runApp() {
     user = new User(Util.generateUniqueId(), "Guest");
+    initDatabase();
 
     gameBoard = new GameBoard();
     gamePanel = new GamePanel();
@@ -94,7 +87,6 @@ public class Application {
     dialogController = new DialogController(loginFrame, gamePanel);
 
     initApp();
-    initDatabase();
 
   }
 

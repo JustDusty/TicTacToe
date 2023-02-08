@@ -79,7 +79,6 @@ public class OptionsController extends Controller
     user.registerPropertyChangeListener(this);
   }
 
-
   @Override
   public void userSelected(User user) {
     this.user = user;
@@ -88,6 +87,7 @@ public class OptionsController extends Controller
     gamePanel.getWinsLabel().setText(String.valueOf(user.getWins()));
     gamePanel.getLossesLabel().setText(String.valueOf(user.getLosses()));
     gamePanel.repaint();
+
   }
 
 }

@@ -1,7 +1,6 @@
 package tictactoe.model.login;
 
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +8,15 @@ import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
 
+  public void createTable() {
+
+  }
+
   @Override
   public void delete(User u) {
     var connection = Database.getInstance().getConnection();
     try {
-      var statement = connection.prepareStatement("Delete from users where userid=?");
+      var statement = connection.prepareStatement("DELETE FROM users WHERE userid=?");
       statement.setInt(1, u.getID());
       statement.executeUpdate();
       statement.close();
@@ -30,7 +33,7 @@ public class UserDaoImpl implements UserDao {
     var connection = Database.getInstance().getConnection();
     try {
       var statement = connection.createStatement();
-      var resultSet = statement.executeQuery("Select userid,username,wins,losses From users");
+      var resultSet = statement.executeQuery("SELECT userid,username,wins,losses FROM users");
 
       while (resultSet.next()) {
         var userid = resultSet.getInt(1);
@@ -67,13 +70,11 @@ public class UserDaoImpl implements UserDao {
     return Optional.empty();
   }
 
-
-  @Override
   @SuppressWarnings("unused")
+  @Override
   public void save(User u) {
     var connection = Database.getInstance().getConnection();
     try {
-
       var sqlite = "INSERT INTO users (userid, username,wins,losses,score)" + "VALUES (?,?,?,?,?)"
           + "ON CONFLICT(userid) DO UPDATE SET "
           + "wins = excluded.wins, losses = excluded.losses, score = excluded.score;";
@@ -98,34 +99,24 @@ public class UserDaoImpl implements UserDao {
   }
 
   @Override
-  public void update(User user) {
-    Connection connection = Database.getInstance().getConnection();
-    var rank = 0;
-    var username = "";
-    var wins = 0;
-    var losses = 0;
+  public void update(User u) {
+    var connection = Database.getInstance().getConnection();
+    int rank = 0;
     try {
-      var statement =
-          connection.prepareStatement("SELECT row_num,userid,username,wins,losses,score FROM"
-              + " (SELECT row_number() OVER (ORDER BY score DESC) AS row_num, userid ,username,wins,losses,score from users) AS t "
-              + "WHERE userid = ?;");
-      statement.setInt(1, user.getID());
+      var sql =
+          "SELECT row_num FROM (SELECT row_number() OVER (ORDER BY score DESC) AS row_num,userid from users) AS t \r\n"
+              + "WHERE userid = ?;";
+      var statement = connection.prepareStatement(sql);
+      statement.setInt(1, u.getID());
       var resultSet = statement.executeQuery();
-      while (resultSet.next()) {
+      while (resultSet.next())
         rank = resultSet.getInt(1);
-        username = resultSet.getString(3);
-        wins = resultSet.getInt(4);
-        losses = resultSet.getInt(5);
 
-      }
+      u.setRank(rank);
+
     } catch (SQLException ex) {
       ex.printStackTrace();
     }
-    user.setRank(rank);
-    user.setName(username);
-    user.setWins(wins);
-    user.setLosses(losses);
-
   }
 
 }

@@ -5,9 +5,10 @@ import java.beans.PropertyChangeSupport;
 
 public class User {
   private int id;
+  private int rank;
   private String name;
   private int wins;
-  private int rank;
+
   private int losses;
 
 
@@ -28,8 +29,6 @@ public class User {
     this.losses = losses;
   }
 
-
-
   @Override
   public boolean equals(Object obj) {
     if (this == obj)
@@ -40,25 +39,28 @@ public class User {
         && this.losses == u.losses);
   }
 
+
+
   public int getID() {
     return id;
   }
-
 
   public int getLosses() {
     return losses;
   }
 
 
-
   public String getName() {
     return name;
   }
 
-  public int getRank() {
-    return this.rank;
 
+
+  public int getRank() {
+    return rank;
   }
+
+
 
   public double getScore() {
     if (losses == 0)
@@ -116,6 +118,7 @@ public class User {
 
   public void setRank(int rank) {
     this.rank = rank;
+
   }
 
   public void setWins(int newWin) {

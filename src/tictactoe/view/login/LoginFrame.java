@@ -10,7 +10,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import tictactoe.controllers.LoginListener;
-import tictactoe.model.login.UserTableModel;
 
 public class LoginFrame extends JDialog {
   class DynamicCardLayout extends CardLayout {
@@ -59,7 +58,7 @@ public class LoginFrame extends JDialog {
     difficultyPanel = new DifficultyPanel();
     gamemodePanel = new GamemodePanel();
     authPanel = new AuthPanel();
-    leaderPanel = new LeaderPanel(new UserTableModel());
+    leaderPanel = new LeaderPanel();
 
     mainPanel.add(welcomePanel);
     mainPanel.add(difficultyPanel);

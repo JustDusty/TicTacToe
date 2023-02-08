@@ -1,6 +1,7 @@
 package tictactoe.view.login;
 
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -15,23 +16,23 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionListener;
 import tictactoe.application.GameConstants;
 import tictactoe.application.Util;
 import tictactoe.controllers.LoginListener;
-import tictactoe.model.login.DatabaseHandler;
 import tictactoe.model.login.User;
 import tictactoe.model.login.UserTableModel;
 
 public class LeaderPanel extends JPanel {
   private static final long serialVersionUID = 1L;
 
+
+
   private UserTableModel model;
   private JTable userTable;
-
 
   private JTextField txtUser;
   private JButton btnPrevious;
@@ -39,13 +40,14 @@ public class LeaderPanel extends JPanel {
   private JButton btnDelete;
   private JButton btnQuit;
 
+
   private transient List<LoginListener> listeners = new ArrayList<>();
 
-  private boolean isFiltering = false;
+  private boolean isBeingModified = false;
 
 
-  public LeaderPanel(UserTableModel model) {
-    this.model = model;
+  public LeaderPanel() {
+    this.model = new UserTableModel();
     JPanel mainPanel = new JPanel();
 
     mainPanel.setLayout(new GridBagLayout());
@@ -70,7 +72,7 @@ public class LeaderPanel extends JPanel {
     mainPanel.add(txtUser, c);
 
     JPanel userTablePanel = new JPanel();
-    userTable = model.createUserTable();
+    userTable = createUserTable();
     JScrollPane scrollPane = new JScrollPane(userTable);
     scrollPane.putClientProperty("JScrollBar.showButtons", true);
     userTablePanel.add(scrollPane);
@@ -109,10 +111,77 @@ public class LeaderPanel extends JPanel {
     add(mainPanel);
     Util.setFontStyle(mainPanel);
 
-    setTableListeners();
+    setTableFilterListeners();
 
   }
 
+  private JTable createUserTable() {
+    userTable = new JTable(model);
+    userTable.setShowGrid(false);
+    userTable.setShowHorizontalLines(false);
+    userTable.setShowVerticalLines(false);
+    userTable.setRowMargin(0);
+    userTable.setIntercellSpacing(new Dimension(0, 0));
+    userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    userTable.setPreferredScrollableViewportSize(new Dimension(370, 400));
+    userTable.setFillsViewportHeight(true);
+    userTable.setRowSorter(model.getSorter());
+    return userTable;
+  }
+
+
+  private void newFilter() {
+    userTable.clearSelection();
+    RowFilter<UserTableModel, Object> filter = null;
+    try {
+      filter = RowFilter.regexFilter(txtUser.getText(), 1);
+    } catch (java.util.regex.PatternSyntaxException e) {
+      return;
+    }
+    model.getSorter().setRowFilter(filter);
+  }
+
+  private void setTableFilterListeners() {
+    userTable.getSelectionModel().addListSelectionListener(e -> EventQueue.invokeLater(() -> {
+      isBeingModified = true;
+      int row = userTable.getSelectedRow();
+      if (row < 0)
+        txtUser.setText("");
+      else {
+        String name = userTable.getValueAt(row, 1).toString();
+        txtUser.setText(name);
+      }
+      isBeingModified = false;
+    }));
+
+    txtUser.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void changedUpdate(DocumentEvent e) {
+        if (!isBeingModified)
+          newFilter();
+      }
+
+      @Override
+      public void insertUpdate(DocumentEvent e) {
+        if (!isBeingModified)
+          newFilter();
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent e) {
+        if (!isBeingModified)
+          newFilter();
+      }
+
+    });
+    txtUser.addFocusListener(new FocusAdapter() {
+      @Override
+      public void focusGained(FocusEvent e) {
+        txtUser.setText("");
+      }
+    });
+
+  }
 
   public void addLoginListener(LoginListener listener) {
     listeners.add(listener);
@@ -123,16 +192,16 @@ public class LeaderPanel extends JPanel {
       listener.userSelected(user);
   }
 
+
   public JButton getBtnConfirm() {
     return btnConfirm;
   }
 
 
+
   public JButton getBtnPrevious() {
     return btnPrevious;
   }
-
-
 
   public JButton getBtnQuit() {
     return btnQuit;
@@ -155,17 +224,6 @@ public class LeaderPanel extends JPanel {
     return txtUser;
   }
 
-  public void newFilter() {
-    userTable.clearSelection();
-    RowFilter<UserTableModel, Object> filter = null;
-    try {
-      filter = RowFilter.regexFilter(txtUser.getText(), 1);
-    } catch (java.util.regex.PatternSyntaxException e) {
-      return;
-    }
-    model.getSorter().setRowFilter(filter);
-  }
-
   public void registerActionListener(ActionListener listener) {
     btnConfirm.setActionCommand(GameConstants.CONFIRM_USER);
     btnPrevious.setActionCommand(GameConstants.PREVIOUS);
@@ -182,68 +240,22 @@ public class LeaderPanel extends JPanel {
       User selectedUser;
       try {
         int row = userTable.getSelectedRow();
-        selectedUser = getUserTableModel().getUserDataAt(row);
+        selectedUser = model.getUserDataAt(row);
         fireUserSelectionEvent(selectedUser);
       } catch (IndexOutOfBoundsException ex) {
         ex.printStackTrace();
       }
     });
-
     btnDelete.addActionListener(e -> {
       int row = userTable.getSelectedRow();
-      if (row != -1) {
-        userTable.clearSelection();
-        User selectedUser = model.getUserDataAt(row);
-        model.delete(selectedUser);
-        DatabaseHandler.USER_DAO.delete(selectedUser);
-      }
-    });
-
-
-
-  }
-
-  public void setTableListeners() {
-    ListSelectionListener listListener = e -> {
-      isFiltering = true;
-      int row = userTable.getSelectedRow();
       if (row < 0)
-        txtUser.setText(null);
-      else {
-        String name = userTable.getValueAt(row, 1).toString();
-        txtUser.setText(name);
-      }
-      isFiltering = false;
-    };
-    userTable.getSelectionModel().addListSelectionListener(listListener);
+        return;
 
-
-    txtUser.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void changedUpdate(DocumentEvent e) {
-        if (!isFiltering)
-          newFilter();
-      }
-
-      @Override
-      public void insertUpdate(DocumentEvent e) {
-        if (!isFiltering)
-          newFilter();
-      }
-
-      @Override
-      public void removeUpdate(DocumentEvent e) {
-        if (!isFiltering)
-          newFilter();
-      }
-
+      userTable.clearSelection();
+      User selectedUser = model.getUserDataAt(row);
+      model.delete(selectedUser);
     });
-    txtUser.addFocusListener(new FocusAdapter() {
-      @Override
-      public void focusGained(FocusEvent e) {
-        txtUser.setText("");
-      }
-    });
+
 
   }
 

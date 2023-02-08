@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 @SuppressWarnings("unused")
 public class Database {
-  private static Database instance = new Database();
+  public static Database instance = new Database();
   private Connection connection;
   private String user = "yassine";
   private String pass = "yassine";
@@ -22,9 +22,8 @@ public class Database {
   }
 
   public void connect() throws SQLException {
-    // connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/yassine ", user, pass);
-    connection =
-        DriverManager.getConnection("jdbc:sqlite:src/tictactoe/model/login/leaderboard.db");
+    connection = DriverManager.getConnection("jdbc:sqlite:leaderboard.db");
+    // connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/yassine", user, pass);
   }
 
   public void disconnect() throws SQLException {

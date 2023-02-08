@@ -132,9 +132,10 @@ public class GameController implements ActionListener, LoginListener {
     this.user = user;
   }
 
-
   @Override
   public void userSelected(User user) {
     this.user = user;
+
   }
+
 }

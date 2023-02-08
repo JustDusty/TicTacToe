@@ -1,11 +1,9 @@
 package tictactoe.model.login;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -14,11 +12,26 @@ public class UserTableModel extends AbstractTableModel {
   private static final long serialVersionUID = 1L;
   protected static final String[] COLUMNS = {"Rank", "Username", "Wins", "Losses", "Score"};
   private JTable userTable;
-  private transient TableRowSorter<UserTableModel> sorter;
   private transient List<User> rows;
+  private transient UserDao userDao = new UserDaoImpl();
+  private transient TableRowSorter<UserTableModel> sorter;
 
   public UserTableModel() {
+    initializeModel();
+    Runtime.getRuntime().addShutdownHook(new Thread(this::saveAll));
+  }
+
+  private void initializeModel() {
     rows = new ArrayList<>();
+    List<User> users = userDao.getAll();
+    add(users);
+    sorter = new TableRowSorter<>(this);
+    sorter.setComparator(0, Comparator.naturalOrder());
+  }
+
+  private void saveAll() {
+    for (User user : getRows())
+      userDao.save(user);
   }
 
   public void add(List<User> users) {
@@ -28,27 +41,13 @@ public class UserTableModel extends AbstractTableModel {
 
   public void add(User user) {
     rows.add(user);
+    userDao.save(user);
     fireTableDataChanged();
-  }
-
-  public JTable createUserTable() {
-    userTable = new JTable(this);
-    userTable.setShowGrid(false);
-    userTable.setShowHorizontalLines(false);
-    userTable.setShowVerticalLines(false);
-    userTable.setRowMargin(0);
-    userTable.setIntercellSpacing(new Dimension(0, 0));
-    userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    userTable.setPreferredScrollableViewportSize(new Dimension(370, 400));
-    userTable.setFillsViewportHeight(true);
-    sorter = new TableRowSorter<>(this);
-    sorter.setComparator(0, Comparator.naturalOrder());
-    userTable.setRowSorter(sorter);
-    return userTable;
   }
 
   public void delete(User user) {
     rows.remove(user);
+    userDao.delete(user);
     fireTableDataChanged();
   }
 
@@ -67,15 +66,14 @@ public class UserTableModel extends AbstractTableModel {
     return rows.size();
   }
 
-
   public List<User> getRows() {
     return rows;
   }
 
-
   public TableRowSorter<UserTableModel> getSorter() {
     return sorter;
   }
+
 
   public User getUserDataAt(int row) {
     return rows.get(row);
@@ -88,8 +86,7 @@ public class UserTableModel extends AbstractTableModel {
   @Override
   public Object getValueAt(int row, int column) {
     User user = getUserDataAt(row);
-    DatabaseHandler.USER_DAO.update(user);
-
+    userDao.update(user);
     return switch (column) {
       case 0 -> user.getRank();
       case 1 -> user.getName();
@@ -103,5 +100,7 @@ public class UserTableModel extends AbstractTableModel {
   public void setSorter(TableRowSorter<UserTableModel> sorter) {
     this.sorter = sorter;
   }
+
+
 
 }
